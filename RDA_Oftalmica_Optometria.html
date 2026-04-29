@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDA – Clínica Oftálmica & Optometría</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/rda.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <svg class="logo-eye" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="28" cy="28" rx="26" ry="26" fill="none" stroke="#c9a84c" stroke-width="2"/>
+      <path d="M6 28 C14 14 42 14 50 28 C42 42 14 42 6 28 Z" fill="none" stroke="white" stroke-width="2"/>
+      <circle cx="28" cy="28" r="8" fill="#0d6e8a"/>
+      <circle cx="28" cy="28" r="4" fill="white"/>
+      <circle cx="30" cy="26" r="1.5" fill="#0d6e8a"/>
+    </svg>
+    <div class="header-title">
+      <h1>Registro Diario de Atención</h1>
+      <p>Clínica Oftálmica · Servicio de Optometría</p>
+    </div>
+    <div class="header-rda" style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+      <div>
+        <span class="rda-badge">RDA · IPS</span>
+        <div class="rda-num" style="display:inline-block; margin-left:8px;">N° <span id="rdaNum">──────</span></div>
+      </div>
+      <button style="padding:6px 14px; border-radius:4px; font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.1); color:#fff; transition:all 0.2s;" onclick="window.location.href='Dashboard_Gestion_RDA.html'" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">← Ir al Dashboard</button>
+    </div>
+  </div>
+  <div class="header-stripe"></div>
+</div>
+
+<!-- META BAR -->
+<div class="meta-bar">
+  <div class="meta-field">
+    <div class="meta-label">Fecha</div>
+    <input type="date" id="fecha">
+  </div>
+  <div class="meta-field">
+    <div class="meta-label">Hora</div>
+    <input type="time" id="hora">
+  </div>
+  <div class="meta-field">
+    <div class="meta-label">Sede / Consultorio</div>
+    <input type="text" placeholder="Ej: Cons. 3 – Sede Norte">
+  </div>
+  <div class="meta-field">
+    <div class="meta-label">Tipo de consulta</div>
+    <select>
+      <option value="">Seleccionar…</option>
+      <option>Primera vez</option>
+      <option>Control</option>
+      <option>Urgencia</option>
+      <option>Post-quirúrgico</option>
+    </select>
+  </div>
+  <div class="meta-field">
+    <div class="meta-label">Seguridad social</div>
+    <select>
+      <option value="">Seleccionar…</option>
+      <option>EPS – Contributivo</option>
+      <option>EPS – Subsidiado</option>
+      <option>Particular</option>
+      <option>ARL</option>
+      <option>SOAT</option>
+      <option>Medicina Prepagada</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ① DATOS DEL PACIENTE -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-icon">👤</span>
+      <span class="section-num">01</span>
+      <span class="section-title">Datos del Paciente</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body three">
+      <div class="field span-full"><label>Nombre completo</label><input type="text" id="rda-name" placeholder="Apellidos y nombres"></div>
+      <div class="field"><label>Tipo de documento</label>
+        <select>
+          <option>CC</option><option>TI</option><option>CE</option><option>PA</option><option>RC</option><option>NUI</option>
+        </select>
+      </div>
+      <div class="field"><label>N° de documento</label><input type="text" id="rda-doc" placeholder=""></div>
+      <div class="field"><label>Fecha de nacimiento</label><input type="date"></div>
+      <div class="field"><label>Edad</label><input type="text" placeholder="Años"></div>
+      <div class="field"><label>Sexo</label>
+        <select><option>Femenino</option><option>Masculino</option><option>Otro</option></select>
+      </div>
+      <div class="field"><label>Estado civil</label>
+        <select><option>Soltero/a</option><option>Casado/a</option><option>Unión libre</option><option>Divorciado/a</option><option>Viudo/a</option></select>
+      </div>
+      <div class="field"><label>Teléfono / Celular</label><input type="tel" id="rda-phone" placeholder=""></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" placeholder=""></div>
+      <div class="field span3"><label>Dirección de residencia</label><input type="text" placeholder="Calle, Barrio, Ciudad"></div>
+      <div class="field"><label>EPS / Aseguradora</label><input type="text" id="rda-eps" placeholder=""></div>
+      <div class="field"><label>N° póliza / afiliación</label><input type="text" placeholder=""></div>
+      <div class="field"><label>Ocupación</label><input type="text" placeholder=""></div>
+    </div>
+  </div>
+
+  <!-- ② ANAMNESIS -->
+  <div class="section">
+    <div class="section-header teal" onclick="toggle(this)">
+      <span class="section-icon">📋</span>
+      <span class="section-num">02</span>
+      <span class="section-title">Anamnesis · Motivo de Consulta</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+      <div class="sub-title">Motivo principal</div>
+      <div class="field"><label>Descripción del motivo de consulta</label>
+        <textarea placeholder="Describa el motivo de consulta con inicio, duración, características y factores modificadores…" style="min-height:80px"></textarea>
+      </div>
+
+      <div class="sub-title" style="margin-top:8px">Síntomas visuales</div>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Disminución de AV</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Visión borrosa</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Fotofobia</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Diplopía</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Miopía / Dificultad lejos</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Dificultad visión cercana</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Cefalea asociada</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Ojo rojo</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Secretas / legañas</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Ardor / prurito</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Cuerpo extraño</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Halos / destellos</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Moscas volantes</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Pérdida campo visual</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Dolor ocular</label>
+        <label class="check-item"><input type="checkbox" onchange="markCheck(this)"> Lagrimeo</label>
+      </div>
+
+      <div class="sub-title" style="margin-top:8px">Antecedentes</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 20px;">
+        <div class="ant-block">
+          <label>Cirugía ocular previa</label>
+          <div class="radio-row">
+            <label><input type="radio" name="cirOcular"> Sí</label>
+            <label><input type="radio" name="cirOcular" checked> No</label>
+          </div>
+          <input type="text" placeholder="¿Cuál? ¿Cuándo?" style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;outline:none;background:var(--section-bg)">
+        </div>
+        <div class="ant-block">
+          <label>Uso de lentes correctivos</label>
+          <div class="radio-row">
+            <label><input type="radio" name="lentes"> Sí</label>
+            <label><input type="radio" name="lentes" checked> No</label>
+          </div>
+          <select style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;background:var(--section-bg);">
+            <option value="">Tipo…</option><option>Gafas</option><option>LC blandas</option><option>LC rígidas</option>
+          </select>
+        </div>
+        <div class="ant-block">
+          <label>Enfermedades sistémicas</label>
+          <div class="radio-row">
+            <label><input type="radio" name="sis"> Sí</label>
+            <label><input type="radio" name="sis" checked> No</label>
+          </div>
+          <input type="text" placeholder="DM, HTA, tiroides…" style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;outline:none;background:var(--section-bg)">
+        </div>
+        <div class="ant-block">
+          <label>Medicamentos actuales</label>
+          <div class="radio-row">
+            <label><input type="radio" name="meds"> Sí</label>
+            <label><input type="radio" name="meds" checked> No</label>
+          </div>
+          <input type="text" placeholder="Nombre y dosis" style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;outline:none;background:var(--section-bg)">
+        </div>
+        <div class="ant-block">
+          <label>Alergias conocidas</label>
+          <div class="radio-row">
+            <label><input type="radio" name="alrg"> Sí</label>
+            <label><input type="radio" name="alrg" checked> No</label>
+          </div>
+          <input type="text" placeholder="¿A qué?" style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;outline:none;background:var(--section-bg)">
+        </div>
+        <div class="ant-block">
+          <label>Antecedentes familiares</label>
+          <div class="radio-row">
+            <label><input type="radio" name="fam"> Sí</label>
+            <label><input type="radio" name="fam" checked> No</label>
+          </div>
+          <input type="text" placeholder="Glaucoma, DMRE, catarata…" style="border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:0.83rem;width:100%;margin-top:4px;outline:none;background:var(--section-bg)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ EXAMEN OPTOMÉTRICO -->
+  <div class="section">
+    <div class="section-header" style="background:#14425e" onclick="toggle(this)">
+      <span class="section-icon">🔬</span>
+      <span class="section-num">03</span>
+      <span class="section-title">Examen Optométrico</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+
+      <!-- Agudeza Visual -->
+      <div class="sub-title">Agudeza Visual (sin corrección → con corrección)</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Ojo</th>
+            <th>AV SC<br><small>sin corrección</small></th>
+            <th>AV CC<br><small>con corrección</small></th>
+            <th>AV Cerca SC</th>
+            <th>AV Cerca CC</th>
+            <th>PH<br><small>pin hole</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="eye-label-cell">OD</td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="J"></td>
+            <td><input placeholder="J"></td>
+            <td><input placeholder="20/"></td>
+          </tr>
+          <tr>
+            <td class="eye-label-cell">OI</td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="J"></td>
+            <td><input placeholder="J"></td>
+            <td><input placeholder="20/"></td>
+          </tr>
+          <tr>
+            <td class="eye-label-cell">AO</td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="20/"></td>
+            <td><input placeholder="J"></td>
+            <td><input placeholder="J"></td>
+            <td>–</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Refracción -->
+      <div class="sub-title" style="margin-top:16px">Refracción (Lensometría / Subjetivo / Objetivo)</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Ojo</th>
+            <th>Esfera (D)</th>
+            <th>Cilindro (D)</th>
+            <th>Eje (°)</th>
+            <th>Adición</th>
+            <th>Prisma</th>
+            <th>AV Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="eye-label-cell">OD</td>
+            <td><input placeholder="+/–"></td>
+            <td><input placeholder="+/–"></td>
+            <td><input placeholder="0–180"></td>
+            <td><input placeholder="+"></td>
+            <td><input placeholder=""></td>
+            <td><input placeholder="20/"></td>
+          </tr>
+          <tr>
+            <td class="eye-label-cell">OI</td>
+            <td><input placeholder="+/–"></td>
+            <td><input placeholder="+/–"></td>
+            <td><input placeholder="0–180"></td>
+            <td><input placeholder="+"></td>
+            <td><input placeholder=""></td>
+            <td><input placeholder="20/"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Motilidad y alineación -->
+      <div class="sub-title" style="margin-top:16px">Motilidad Ocular & Alineación</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div class="field"><label>Cover test lejos</label><input type="text" placeholder="Orto / Exo / Eso"></div>
+        <div class="field"><label>Cover test cerca</label><input type="text" placeholder="Orto / Exo / Eso"></div>
+        <div class="field"><label>Hirschberg</label><input type="text" placeholder="Centrado / Desviado"></div>
+        <div class="field"><label>Motilidad MOM</label><input type="text" placeholder="Completa / Restringida"></div>
+        <div class="field"><label>PPC (punto próx. convergencia)</label><input type="text" placeholder="cm"></div>
+        <div class="field"><label>Estereopsis</label><input type="text" placeholder="seg arc"></div>
+      </div>
+
+      <!-- Queratometría -->
+      <div class="sub-title" style="margin-top:16px">Queratometría / Topografía</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Ojo</th>
+            <th>K1 (D / mm)</th>
+            <th>K2 (D / mm)</th>
+            <th>Eje K</th>
+            <th>Astigmatismo corneal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="eye-label-cell">OD</td>
+            <td><input></td><td><input></td><td><input></td><td><input></td>
+          </tr>
+          <tr>
+            <td class="eye-label-cell">OI</td>
+            <td><input></td><td><input></td><td><input></td><td><input></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PIO -->
+      <div class="sub-title" style="margin-top:16px">Presión Intraocular (PIO)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+        <div class="field"><label>PIO OD (mmHg)</label><input type="text" placeholder="10–21"></div>
+        <div class="field"><label>PIO OI (mmHg)</label><input type="text" placeholder="10–21"></div>
+        <div class="field"><label>Hora medición</label><input type="time"></div>
+        <div class="field"><label>Método</label>
+          <select><option>No contacto</option><option>Goldmann</option><option>Icare</option><option>Schiötz</option></select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:4px"><label>Observaciones optométricas</label>
+        <textarea placeholder="Hallazgos adicionales, comportamiento visual, dominancia ocular…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ EXAMEN OFTALMOLÓGICO -->
+  <div class="section">
+    <div class="section-header" style="background:#0a3d52" onclick="toggle(this)">
+      <span class="section-icon">🔦</span>
+      <span class="section-num">04</span>
+      <span class="section-title">Examen Oftalmológico</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+
+      <div class="sub-title">Segmento Anterior – Biomicroscopía</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Estructura</th>
+            <th>Ojo Derecho (OD)</th>
+            <th>Ojo Izquierdo (OI)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="eye-label-cell">Párpados</td><td><input placeholder="Normal"></td><td><input placeholder="Normal"></td></tr>
+          <tr><td class="eye-label-cell">Conjuntiva</td><td><input placeholder="Blanca / sin inyección"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Córnea</td><td><input placeholder="Transparente / sin lesión"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Cámara anterior</td><td><input placeholder="Profunda / limpia"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Iris</td><td><input placeholder="Normal / plano"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Pupila</td><td><input placeholder="Redonda / reactiva"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Cristalino</td><td><input placeholder="Transparente"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Vítreo</td><td><input placeholder="Sin opacidades"></td><td><input placeholder=""></td></tr>
+        </tbody>
+      </table>
+
+      <!-- Fondo de ojo -->
+      <div class="sub-title" style="margin-top:16px">Fondo de Ojo (Oftalmoscopía)</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Estructura</th>
+            <th>Ojo Derecho (OD)</th>
+            <th>Ojo Izquierdo (OI)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="eye-label-cell">Papila / Disco</td><td><input placeholder="C/D  bordes  color"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Relación C/D</td><td><input placeholder="0.3"></td><td><input placeholder="0.3"></td></tr>
+          <tr><td class="eye-label-cell">Mácula</td><td><input placeholder="Brillo foveal / sin lesión"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Vasos</td><td><input placeholder="Relación AV / calibre"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Retina periférica</td><td><input placeholder="Sin degeneraciones"></td><td><input placeholder=""></td></tr>
+          <tr><td class="eye-label-cell">Coroides</td><td><input placeholder="Sin alteraciones"></td><td><input placeholder=""></td></tr>
+        </tbody>
+      </table>
+
+      <!-- Dilatación -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px">
+        <div class="field"><label>Midriasis aplicada</label>
+          <select><option>No</option><option>Tropicamida 1%</option><option>Ciclopentolato 1%</option><option>Fenilefrina 2.5%</option></select>
+        </div>
+        <div class="field"><label>Hora dilatación</label><input type="time"></div>
+        <div class="field"><label>Consentimiento dilatación</label>
+          <select><option>Firmado</option><option>Verbal</option><option>No aplica</option></select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:8px"><label>Observaciones oftalmológicas adicionales</label>
+        <textarea placeholder="Hallazgos especiales, esquemas, notas de examen…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ DIAGNÓSTICO Y TRATAMIENTO -->
+  <div class="section">
+    <div class="section-header" style="background:#1a5c28" onclick="toggle(this)">
+      <span class="section-icon">🩺</span>
+      <span class="section-num">05</span>
+      <span class="section-title">Diagnóstico & Plan de Tratamiento</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+
+      <div class="sub-title">Diagnósticos CIE-10 frecuentes (clic para seleccionar)</div>
+      <div id="dxPills" style="margin-bottom:12px">
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H52.1">H52.1 Miopía</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H52.2">H52.2 Astigmatismo</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H52.0">H52.0 Hipermetropía</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H52.4">H52.4 Presbicia</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H10">H10 Conjuntivitis</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H26">H26 Catarata</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H40">H40 Glaucoma</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H35.3">H35.3 DMRE</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H04.1">H04.1 Ojo seco</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H18.6">H18.6 Queratocono</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H50">H50 Estrabismo</span>
+        <span class="dx-pill" onclick="toggleDx(this)" data-code="H53.2">H53.2 Diplopía</span>
+      </div>
+
+      <div class="field"><label>Diagnóstico(s) definitivo(s) con código CIE-10</label>
+        <textarea id="dxField" placeholder="Ej: H52.1 – Miopía bilateral / H52.2 – Astigmatismo OD" style="min-height:64px"></textarea>
+      </div>
+
+      <hr class="divider">
+      <div class="sub-title">Formulación de lentes ópticos / LC</div>
+      <table class="eye-table">
+        <thead>
+          <tr>
+            <th class="eye-label">Ojo</th>
+            <th>Esfera</th>
+            <th>Cilindro</th>
+            <th>Eje</th>
+            <th>Adición</th>
+            <th>Tipo lente / material</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="eye-label-cell">OD</td>
+            <td><input></td><td><input></td><td><input></td><td><input></td>
+            <td><input placeholder="Monofocal / Bifocal / Progresivo / LC…"></td>
+          </tr>
+          <tr>
+            <td class="eye-label-cell">OI</td>
+            <td><input></td><td><input></td><td><input></td><td><input></td>
+            <td><input></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
+        <div class="field"><label>DPN OD (mm)</label><input type="text"></div>
+        <div class="field"><label>DPN OI (mm)</label><input type="text"></div>
+        <div class="field"><label>Altura segmento (lente progresivo)</label><input type="text"></div>
+        <div class="field"><label>Tratamiento / filtro</label>
+          <select><option>Sin filtro</option><option>Antireflejo</option><option>Fotocromático</option><option>Blue filter</option><option>Polarizado</option></select>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="sub-title">Tratamiento farmacológico</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="field"><label>Medicamento 1</label><input type="text" placeholder="Nombre comercial / genérico"></div>
+        <div class="field"><label>Dosis / posología 1</label><input type="text" placeholder="Ej: 1 gota c/8h × 7 días"></div>
+        <div class="field"><label>Medicamento 2</label><input type="text" placeholder=""></div>
+        <div class="field"><label>Dosis / posología 2</label><input type="text" placeholder=""></div>
+        <div class="field"><label>Medicamento 3</label><input type="text" placeholder=""></div>
+        <div class="field"><label>Dosis / posología 3</label><input type="text" placeholder=""></div>
+      </div>
+
+      <hr class="divider">
+      <div class="sub-title">Plan de manejo y recomendaciones</div>
+      <div class="field"><label>Remisiones / interconsultas</label>
+        <input type="text" placeholder="Ej: Remite a oftalmología para fondo de ojo bajo dilatación, neurología…">
+      </div>
+      <div class="field"><label>Exámenes paraclínicos ordenados</label>
+        <input type="text" placeholder="Ej: Topografía, OCT, campo visual, ecografía ocular…">
+      </div>
+      <div class="field"><label>Educación al paciente / recomendaciones</label>
+        <textarea placeholder="Instrucciones de uso de LC, hábitos visuales, uso de gotas, señales de alarma…"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div class="field"><label>Próxima cita</label><input type="date"></div>
+        <div class="field"><label>Tiempo de control</label>
+          <select><option>1 semana</option><option>15 días</option><option>1 mes</option><option>3 meses</option><option>6 meses</option><option>1 año</option></select>
+        </div>
+        <div class="field"><label>Pronóstico</label>
+          <select><option>Favorable</option><option>Reservado</option><option>Desfavorable</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ HISTORIAL MÉDICO -->
+  <div class="section">
+    <div class="section-header" style="background:#4b3f72" onclick="toggle(this)">
+      <span class="section-icon">📂</span>
+      <span class="section-num">06</span>
+      <span class="section-title">Historial Médico</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+      <div class="field">
+        <label>Historia Clínica del Paciente</label>
+        <textarea id="historialMedico" placeholder="Escriba aquí la evolución clínica, notas pasadas y el historial médico general de este paciente..." style="min-height:150px"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRMAS -->
+  <div class="section">
+    <div class="section-header" style="background:#2d2d2d" onclick="toggle(this)">
+      <span class="section-icon">✍️</span>
+      <span class="section-num">07</span>
+      <span class="section-title">Firmas & Responsables</span>
+      <span class="chevron open">▼</span>
+    </div>
+    <div class="section-body full">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:12px">
+        <div class="field"><label>Profesional tratante</label><input type="text" placeholder="Nombre completo"></div>
+        <div class="field"><label>Registro profesional (TP / RM)</label><input type="text" placeholder="N°"></div>
+        <div class="field"><label>Especialidad</label>
+          <select><option>Optometría</option><option>Oftalmología</option><option>Optometría – Especialista en LC</option></select>
+        </div>
+        <div class="field"><label>Institución / IPS</label><input type="text" placeholder=""></div>
+      </div>
+      <div class="firma-row">
+        <div class="firma-box">
+          <div class="firma-line"></div>
+          <div class="firma-label">Firma del profesional</div>
+        </div>
+        <div class="firma-box">
+          <div class="firma-line"></div>
+          <div class="firma-label">Firma del paciente / acudiente</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:20px"><label>Observaciones finales / notas de la consulta</label>
+        <textarea placeholder="Notas libres, incidentes, aclaraciones…" style="min-height:60px"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCIONES -->
+  <div class="actions">
+    <button class="btn btn-outline" onclick="window.location.href='Dashboard_Gestion_RDA.html'">Volver al Dashboard</button>
+    <button class="btn btn-outline" onclick="clearForm()">Limpiar formulario</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+    <button class="btn btn-primary" style="background:#0d6e8a" onclick="saveRDA()">💾 Guardar RDA</button>
+  </div>
+
+</div><!-- /main -->
+
+<script src="js/rda.js"></script>
+</body>
+</html>

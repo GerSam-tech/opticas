@@ -1,0 +1,21 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #1e293b;
+  --teal: #0284c7;
+  --teal-light: #38bdf8;
+  --gold: #34d399;
+  --cream: #f8fafc;
+  --white: #ffffff;
+  --muted: #64748b;
+  --border: #cbd5e1;
+  --section-bg: #f1f5f9;
+  --red: #ef4444;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--section-bg);
+  color: var(--navy);
+  min-height: 100vh;
+}

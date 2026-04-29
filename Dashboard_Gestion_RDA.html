@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Gestión RDA – Clínica Oftálmica</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="logo-circle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <ellipse cx="12" cy="12" rx="10" ry="10" stroke="white" stroke-width="1.5"/>
+        <path d="M2 12 C7 6 17 6 22 12 C17 18 7 18 2 12Z" stroke="white" stroke-width="1.4" fill="none"/>
+        <circle cx="12" cy="12" r="3.5" fill="#34d399"/>
+        <circle cx="12" cy="12" r="1.5" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Clínica Oftálmica</div>
+      <div class="brand-sub">Panel de gestión RDA</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge-live"><span class="dot"></span>SISTEMA EN LÍNEA</span>
+    <button class="btn-top btn-wa-top" onclick="showToast('Conectando con WhatsApp Business API…',true)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#1e293b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp Business
+    </button>
+    <button class="btn-top" style="background:#f1f5f9;color:#1e293b;border:1px solid #cbd5e1" onclick="if(selectedId){window.location.href='RDA_Oftalmica_Optometria.html?id='+selectedId;}else{showToast('Seleccione un paciente',false);}">Ir a RDA</button>
+    <button class="btn-top btn-new" onclick="openModal()">+ Nuevo RDA</button>
+  </div>
+</div>
+
+<!-- METRICS -->
+<div class="metrics-bar">
+  <div class="metric">
+    <div class="metric-label">Atenciones hoy</div>
+    <div class="metric-num mn-blue">12</div>
+    <div class="metric-sub">↑ 3 vs ayer</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Completadas</div>
+    <div class="metric-num mn-green">8</div>
+    <div class="metric-sub">67% del turno</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Notif. enviadas</div>
+    <div class="metric-num mn-green" id="waCount">6</div>
+    <div class="metric-sub">vía WhatsApp</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Pendientes</div>
+    <div class="metric-num mn-amber">4</div>
+    <div class="metric-sub">en espera</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-grid">
+
+  <!-- LEFT: PATIENT LIST -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Registro de atenciones — <span id="fecha-hoy"></span></span>
+      <input class="search-input" placeholder="Buscar paciente o diagnóstico…" oninput="filterList(this.value)" id="searchInput">
+    </div>
+    <div class="filter-row">
+      <button class="fbtn active" onclick="setFilter(this,'todos')">Todos</button>
+      <button class="fbtn" onclick="setFilter(this,'completado')">Completados</button>
+      <button class="fbtn" onclick="setFilter(this,'en proceso')">En proceso</button>
+      <button class="fbtn" onclick="setFilter(this,'pendiente')">Pendientes</button>
+    </div>
+    <div id="patient-list"></div>
+  </div>
+
+  <!-- RIGHT: DETAIL -->
+  <div class="panel" style="display:flex;flex-direction:column">
+    <div class="det-head">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div class="det-av" id="det-av" style="margin-bottom:0;">MR</div>
+          <div>
+            <div class="det-name" id="det-name">Seleccione un paciente</div>
+            <div class="det-sub" id="det-sub">–</div>
+          </div>
+        </div>
+        <button class="fbtn" style="border:none; background:#e8edf3; color:#0a1628; display:none" id="btn-edit-patient" onclick="openEditModal()">✏️ Editar</button>
+      </div>
+    </div>
+    <div class="tab-row">
+      <div class="tab active" onclick="switchTab(this,'datos')">Resumen RDA</div>
+      <div class="tab" onclick="switchTab(this,'historial')">Proceso</div>
+      <div class="tab" onclick="switchTab(this,'clinica')">Hist. Clínica</div>
+    </div>
+
+    <div id="tab-datos" class="tab-content show" style="flex:1">
+      <div id="det-rows"></div>
+    </div>
+    <div id="tab-historial" class="tab-content">
+      <div class="tl-wrap" id="tl-wrap"></div>
+    </div>
+    <div id="tab-clinica" class="tab-content">
+      <div style="padding:14px 20px 0;">
+        <button class="fbtn" style="border:1px solid #0284c7; background:#f1f5f9; color:#0284c7; width:100%; margin-bottom:10px" onclick="if(selectedId) window.open('Historial_Clinico.html?id='+selectedId, '_blank')">📄 Abrir Historial en Pestaña Nueva / Exportar PDF</button>
+      </div>
+      <div style="padding:0 20px 20px; font-size:0.82rem; color:#1e293b; white-space:pre-wrap; line-height:1.5" id="det-historia-clinica">
+        Seleccione un paciente para ver su historia clínica.
+      </div>
+    </div>
+
+    <!-- WA NOTIFICATION -->
+    <div class="wa-panel">
+      <div class="wa-panel-title">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#64748b" style="vertical-align:middle;margin-right:4px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Notificación WhatsApp Business
+      </div>
+      <select class="wa-select" id="wa-type" onchange="updatePreview()">
+        <option value="receta">📋 Receta óptica lista para retirar</option>
+        <option value="cita">📅 Recordatorio de cita</option>
+        <option value="resultado">🔬 Resultados de examen disponibles</option>
+        <option value="control">👁️ Control oftalmológico programado</option>
+        <option value="lentes">👓 Lentes listos para entrega</option>
+        <option value="personalizado">✏️ Mensaje personalizado</option>
+      </select>
+      <div class="wa-preview" id="wa-preview">Seleccione un paciente para previsualizar el mensaje.</div>
+      <div class="phone-row">
+        <input type="tel" id="wa-phone" placeholder="+57 300 000 0000">
+        <button style="padding:8px 12px;border-radius:6px;border:1px solid #d4dde8;background:#f1f5f9;font-size:.75rem;font-weight:600;cursor:pointer;color:#1e293b" onclick="copyMsg()">Copiar</button>
+      </div>
+      <button class="btn-send" onclick="sendWA()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#1e293b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar por WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO RDA -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Nuevo Registro de Atención</div>
+    <div class="modal-sub" id="modal-sub">Ingrese los datos básicos para iniciar el RDA</div>
+    <div class="modal-grid">
+      <div class="mfield span2"><label>Nombre completo del paciente</label><input type="text" id="new-name" placeholder="Apellidos y nombres"></div>
+      <div class="mfield"><label>Tipo doc.</label>
+        <select id="new-doc-type"><option>CC</option><option>TI</option><option>CE</option><option>PA</option></select>
+      </div>
+      <div class="mfield"><label>N° documento</label><input type="text" id="new-doc" placeholder=""></div>
+      <div class="mfield"><label>Teléfono / WhatsApp</label><input type="tel" id="new-phone" placeholder="+57 300 000 0000"></div>
+      <div class="mfield"><label>EPS / Aseguradora</label><input type="text" id="new-eps" placeholder=""></div>
+      <div class="mfield"><label>Tipo de consulta</label>
+        <select id="new-tipo"><option>Primera vez</option><option>Control</option><option>Urgencia</option><option>Post-quirúrgico</option></select>
+      </div>
+      <div class="mfield"><label>Profesional</label>
+        <select id="new-prof"><option>Opt. Andrea Salcedo</option><option>Dr. Héctor Monsalve</option></select>
+      </div>
+      <div class="mfield span2"><label>Motivo de consulta</label>
+        <textarea id="new-motivo" style="min-height:56px" placeholder="Describa brevemente…"></textarea>
+      </div>
+      <div class="mfield span2" id="edit-historial-container" style="display:none"><label>Historia Clínica</label>
+        <textarea id="edit-historial" style="min-height:100px" placeholder="Evolución clínica, notas pasadas..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="mbtn mbtn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="mbtn mbtn-save" id="modal-save-btn" onclick="saveNew()">Crear RDA</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

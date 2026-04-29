@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historial Clínico</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'DM Sans', sans-serif; background: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+  .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; box-shadow: 0 4px 12px rgba(30,41,59,0.05); border-radius: 8px; }
+  .header { border-bottom: 2px solid #0284c7; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .brand h1 { font-family: 'DM Serif Display', serif; margin: 0; color: #0284c7; font-size: 2rem; }
+  .brand p { margin: 4px 0 0; color: #64748b; font-size: 0.9rem; }
+  .patient-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0; }
+  .info-item label { display: block; font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+  .info-item div { font-size: 1rem; font-weight: 500; }
+  .history-content { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+  .section-title { font-size: 1.2rem; font-weight: 600; color: #1e293b; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+  .actions { text-align: center; margin-top: 40px; }
+  .btn { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; font-family: 'DM Sans', sans-serif; }
+  .btn:hover { background: #0369a1; }
+  @media print {
+    body { background: white; padding: 0; }
+    .container { box-shadow: none; padding: 0; max-width: 100%; border:none; }
+    .actions { display: none; }
+    .patient-info { border: none; background: transparent; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <h1>Historia Clínica</h1>
+      <p>Clínica Oftálmica & Optometría</p>
+    </div>
+    <div style="text-align: right; color: #6b7a8d; font-size: 0.9rem;">
+      Fecha de impresión: <span id="print-date"></span>
+    </div>
+  </div>
+
+  <div class="patient-info">
+    <div class="info-item"><label>Paciente</label><div id="p-name">-</div></div>
+    <div class="info-item"><label>Documento</label><div id="p-doc">-</div></div>
+    <div class="info-item"><label>EPS / Aseguradora</label><div id="p-eps">-</div></div>
+    <div class="info-item"><label>Teléfono</label><div id="p-phone">-</div></div>
+  </div>
+
+  <div class="patient-info" style="margin-top:-15px;">
+    <div class="info-item"><label>Fecha y Hora</label><div id="m-fecha-hora">-</div></div>
+    <div class="info-item"><label>Sede / Consultorio</label><div id="m-sede">-</div></div>
+    <div class="info-item"><label>Tipo de consulta</label><div id="m-tipo">-</div></div>
+    <div class="info-item"><label>Seguridad social</label><div id="m-ss">-</div></div>
+  </div>
+
+  <div class="section-title">Evolución e Historial Médico</div>
+  <div class="history-content" id="history-text">
+    Cargando información...
+  </div>
+
+  <div class="actions">
+    <button class="btn" onclick="window.print()">🖨️ Exportar a PDF / Imprimir</button>
+  </div>
+</div>
+
+<script>
+  document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-CO');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get('id');
+  
+  if (patientId) {
+    const patients = JSON.parse(localStorage.getItem('patients_list')) || [];
+    const p = patients.find(x => x.id == patientId);
+    if (p) {
+      document.getElementById('p-name').textContent = p.name;
+      document.getElementById('p-doc').textContent = p.doc;
+      document.getElementById('p-eps').textContent = p.eps || 'No registrada';
+      document.getElementById('p-phone').textContent = p.phone || 'No registrado';
+    }
+    
+    const rdaDataStr = localStorage.getItem('rda_data_' + patientId);
+    if (rdaDataStr) {
+      const rdaData = JSON.parse(rdaDataStr);
+      document.getElementById('history-text').textContent = rdaData.historial || 'No hay notas de historial médico registradas en el RDA para este paciente.';
+      
+      if (rdaData.fields && rdaData.fields.length > 4) {
+        document.getElementById('m-fecha-hora').textContent = (rdaData.fields[0] || '-') + ' ' + (rdaData.fields[1] || '');
+        document.getElementById('m-sede').textContent = rdaData.fields[2] || '-';
+        document.getElementById('m-tipo').textContent = rdaData.fields[3] || '-';
+        document.getElementById('m-ss').textContent = rdaData.fields[4] || '-';
+      }
+    } else {
+      document.getElementById('history-text').textContent = 'El paciente no tiene un RDA guardado con historial médico.';
+    }
+  } else {
+    document.getElementById('history-text').textContent = 'Error: No se especificó el ID del paciente.';
+  }
+</script>
+
+</body>
+</html>
